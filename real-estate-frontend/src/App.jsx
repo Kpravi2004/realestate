@@ -1,8 +1,15 @@
+import { Routes, Route, Navigate } from "react-router-dom";
+import Login from "./Login";
 import Register from "./Register";
-export default function App() {
+
+function App() {
   return (
-    <div style={{ padding: "20px" }}>
-      <Register />
-    </div>
+    <Routes>
+      <Route path="/" element={<Navigate to="/login" />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+    </Routes>
   );
 }
+
+export default App;
