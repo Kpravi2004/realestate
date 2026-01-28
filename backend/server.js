@@ -4,6 +4,11 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 
+// SQLite DB
+const db = require("./db/sqlite");
+
+// ML logic
+const { loadAndTrain, predict } = require("./ml/linearRegression");
 const authRoutes = require("./routes/auth");
 
 const app = express();

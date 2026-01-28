@@ -1,31 +1,29 @@
 const sqlite3 = require("sqlite3").verbose();
+const path = require("path");
 
-const db = new sqlite3.Database("./db/database.sqlite", (err) => {
+const dbPath = path.resolve("database.sqlite");
+
+const db = new sqlite3.Database(dbPath, (err) => {
   if (err) {
-    console.error("SQLite Error:", err.message);
+    console.error(" SQLite connection failed:", err.message);
   } else {
-    console.log("SQLite Connected");
+    console.log(" SQLite connected");
   }
 });
 
+// Create table if not exists
 db.run(`
   CREATE TABLE IF NOT EXISTS predictions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    location TEXT,
-    area INTEGER,
-    bedrooms INTEGER,
-    age INTEGER,
-    price INTEGER,
+    year INTEGER,
+    soil_type INTEGER,
+    water_availability INTEGER,
+    crop_type INTEGER,
+    distance_from_city_km REAL,
+    land_size_acres REAL,
+    predicted_price REAL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )
 `);
 
-module.exports = {
-  insertPrediction: (data, callback) => {
-    const sql = `
-      INSERT INTO predictions (location, area, bedrooms, age, price)
-      VALUES (?, ?, ?, ?, ?)
-    `;
-    db.run(sql, data, callback);
-  }
-};
+module.exports = db;
