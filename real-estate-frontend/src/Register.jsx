@@ -1,90 +1,114 @@
 import { useState } from "react";
 import "./Register.css";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Register() {
-  const [form, setForm] = useState({
-    name: "",
+  const navigate = useNavigate();
+
+  const [data, setData] = useState({
+    username: "",
     email: "",
     password: "",
-    confirmPassword: ""
+    confirmPassword: "",
   });
 
-  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setData({ ...data, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (form.password !== form.confirmPassword) {
-      setMessage("Passwords do not match");
+    // ✅ Frontend validation
+    if (data.password !== data.confirmPassword) {
+      alert("Passwords do not match ❌");
       return;
     }
 
-    // 🔗 BACKEND INTEGRATION (LATER)
-    // axios.post("http://localhost:5000/auth/register", form)
+    try {
+      setLoading(true);
 
-    console.log("Form Data Sent:", form);
-    setMessage("Registration successful (backend not connected yet)");
+      // ✅ SEND DATA TO BACKEND
+      const res = await fetch("http://localhost:5000/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: data.username,
+          email: data.email,
+          password: data.password,
+        }),
+      });
 
-    setForm({
-      name: "",
-      email: "",
-      password: "",
-      confirmPassword: ""
-    });
+      const result = await res.json();
+
+      if (!res.ok) {
+        alert(result.message || "Registration failed ❌");
+        return;
+      }
+
+      alert(result.message || "Registration Successful ✅");
+
+      // ✅ Redirect to login page after success
+      navigate("/login");
+    } catch (error) {
+      alert("Server not reachable ❌");
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="register-wrapper">
-      <div className="register-card">
-        <h2>Create Account</h2>
-        <p className="subtitle">Register to list or explore properties</p>
+      <form className="register-card" onSubmit={handleSubmit}>
+        <h2>Find Your Dream Home</h2>
+        <p className="subtitle">Create your real estate account</p>
 
-        <form onSubmit={handleSubmit}>
-          <input
-            type="text"
-            name="name"
-            placeholder="Full Name"
-            value={form.name}
-            onChange={handleChange}
-            required
-          />
+        <input
+          type="text"
+          name="username"
+          placeholder="Username"
+          required
+          onChange={handleChange}
+        />
 
-          <input
-            type="email"
-            name="email"
-            placeholder="Email Address"
-            value={form.email}
-            onChange={handleChange}
-            required
-          />
+        <input
+          type="email"
+          name="email"
+          placeholder="Email Address"
+          required
+          onChange={handleChange}
+        />
 
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={form.password}
-            onChange={handleChange}
-            required
-          />
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          required
+          onChange={handleChange}
+        />
 
-          <input
-            type="password"
-            name="confirmPassword"
-            placeholder="Confirm Password"
-            value={form.confirmPassword}
-            onChange={handleChange}
-            required
-          />
+        <input
+          type="password"
+          name="confirmPassword"
+          placeholder="Confirm Password"
+          required
+          onChange={handleChange}
+        />
 
-          <button type="submit">Register</button>
-        </form>
+        <button type="submit" disabled={loading}>
+          {loading ? "Creating..." : "Create Account"}
+        </button>
 
-        {message && <p className="message">{message}</p>}
-      </div>
+        <p className="login-link">
+          Already have an account?
+          <Link className="link" to="/login"> Login</Link>
+        </p>
+      </form>
     </div>
   );
 }
