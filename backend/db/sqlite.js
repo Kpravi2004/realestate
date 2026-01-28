@@ -1,17 +1,17 @@
-import sqlite3 from "sqlite3";
-import path from "path";
+const sqlite3 = require("sqlite3").verbose();
+const path = require("path");
 
 const dbPath = path.resolve("database.sqlite");
 
 const db = new sqlite3.Database(dbPath, (err) => {
   if (err) {
-    console.error("SQLite connection failed:", err.message);
+    console.error(" SQLite connection failed:", err.message);
   } else {
-    console.log("SQLite connected");
+    console.log(" SQLite connected");
   }
 });
 
-/* Create table (runs once safely) */
+// Create table if not exists
 db.run(`
   CREATE TABLE IF NOT EXISTS predictions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -26,4 +26,4 @@ db.run(`
   )
 `);
 
-export default db;
+module.exports = db;
