@@ -1,15 +1,14 @@
-import { Routes, Route, Navigate } from "react-router-dom";
-import Login from "./Login";
-import Register from "./Register";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import PropertyMultiStepForm from "./pages/PropertyMultiStepForm";
+import PropertyDetail from "./pages/PropertyDetails";
 
-function App() {
+export default function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Navigate to="/login" />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-    </Routes>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<PropertyMultiStepForm />} />
+        <Route path="/property/:id" element={<PropertyDetail />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
-
-export default App;
