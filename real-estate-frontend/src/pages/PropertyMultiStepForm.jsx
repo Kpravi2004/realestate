@@ -1,13 +1,27 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+const CURRENT_YEAR = new Date().getFullYear();
+
+const YEARS = [
+  CURRENT_YEAR - 1,
+  CURRENT_YEAR - 2,
+  CURRENT_YEAR - 3,
+  CURRENT_YEAR - 4,
+  CURRENT_YEAR - 5,
+];
+
+const WATER_OPTIONS = ["Yes", "No"];
+const SOIL_TYPES = ["Black", "Red", "Alluvial", "Laterite"];
+const CROP_TYPES = ["Coconut", "Banana", "Drumstick", "Other"];
+
 export default function PropertyMultiStepForm() {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
 
-  // 🔹 Current year (factors only)
+  // 🔹 Current year (DEFAULTED)
   const [currentYear, setCurrentYear] = useState({
-    year: 2024,
+    year: CURRENT_YEAR,
     soil_type: "",
     water_availability: "",
     crop_type: "",
@@ -57,15 +71,13 @@ export default function PropertyMultiStepForm() {
     const payload = {
       current_year: currentYear,
       past_years: pastYears,
-      predict_year: 2026,
+      predict_year: CURRENT_YEAR + 2,
     };
 
-    console.log("Payload sent to backend 👉", payload);
+    console.log("Final Payload →", payload);
 
-    // Later: send payload to backend
-    // fetch("/api/predict", { ... })
-
-    navigate("/property/1"); // demo redirect
+    // Later connect backend here
+    navigate("/property/1");
   };
 
   return (
@@ -73,13 +85,42 @@ export default function PropertyMultiStepForm() {
       <div style={styles.card}>
         {step === 1 && (
           <>
-            <h2>This Year Details</h2>
+            <h2>This Year Details ({CURRENT_YEAR})</h2>
 
-            <input name="soil_type" placeholder="Soil Type" onChange={handleCurrentChange} />
-            <input name="water_availability" placeholder="Water Availability (Yes/No)" onChange={handleCurrentChange} />
-            <input name="crop_type" placeholder="Crop Type" onChange={handleCurrentChange} />
-            <input name="distance_from_city_km" placeholder="Distance from City (km)" onChange={handleCurrentChange} />
-            <input name="land_size_acres" placeholder="Land Size (acres)" onChange={handleCurrentChange} />
+            <select name="soil_type" onChange={handleCurrentChange}>
+              <option value="">Select Soil Type</option>
+              {SOIL_TYPES.map((s) => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
+
+            <select name="water_availability" onChange={handleCurrentChange}>
+              <option value="">Water Availability</option>
+              {WATER_OPTIONS.map((w) => (
+                <option key={w} value={w}>{w}</option>
+              ))}
+            </select>
+
+            <select name="crop_type" onChange={handleCurrentChange}>
+              <option value="">Crop Type</option>
+              {CROP_TYPES.map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+
+            <input
+              type="number"
+              name="distance_from_city_km"
+              placeholder="Distance from City (km)"
+              onChange={handleCurrentChange}
+            />
+
+            <input
+              type="number"
+              name="land_size_acres"
+              placeholder="Land Size (acres)"
+              onChange={handleCurrentChange}
+            />
 
             <button onClick={() => setStep(2)}>Next</button>
           </>
@@ -91,13 +132,63 @@ export default function PropertyMultiStepForm() {
 
             {pastYears.map((item, index) => (
               <div key={index} style={styles.box}>
-                <input name="year" placeholder="Year" onChange={(e) => handlePastChange(index, e)} />
-                <input name="soil_type" placeholder="Soil Type" onChange={(e) => handlePastChange(index, e)} />
-                <input name="water_availability" placeholder="Water Availability" onChange={(e) => handlePastChange(index, e)} />
-                <input name="crop_type" placeholder="Crop Type" onChange={(e) => handlePastChange(index, e)} />
-                <input name="distance_from_city_km" placeholder="Distance from City" onChange={(e) => handlePastChange(index, e)} />
-                <input name="land_size_acres" placeholder="Land Size" onChange={(e) => handlePastChange(index, e)} />
-                <input name="price_lakhs" placeholder="Price (Lakhs)" onChange={(e) => handlePastChange(index, e)} />
+                <select name="year" onChange={(e) => handlePastChange(index, e)}>
+                  <option value="">Select Year</option>
+                  {YEARS.map((y) => (
+                    <option key={y} value={y}>{y}</option>
+                  ))}
+                </select>
+
+                <select
+                  name="soil_type"
+                  onChange={(e) => handlePastChange(index, e)}
+                >
+                  <option value="">Soil Type</option>
+                  {SOIL_TYPES.map((s) => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                </select>
+
+                <select
+                  name="water_availability"
+                  onChange={(e) => handlePastChange(index, e)}
+                >
+                  <option value="">Water Availability</option>
+                  {WATER_OPTIONS.map((w) => (
+                    <option key={w} value={w}>{w}</option>
+                  ))}
+                </select>
+
+                <select
+                  name="crop_type"
+                  onChange={(e) => handlePastChange(index, e)}
+                >
+                  <option value="">Crop Type</option>
+                  {CROP_TYPES.map((c) => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
+
+                <input
+                  type="number"
+                  name="distance_from_city_km"
+                  placeholder="Distance from City (km)"
+                  onChange={(e) => handlePastChange(index, e)}
+                />
+
+                <input
+                  type="number"
+                  name="land_size_acres"
+                  placeholder="Land Size (acres)"
+                  onChange={(e) => handlePastChange(index, e)}
+                />
+
+                <input
+                  type="number"
+                  name="price_lakhs"
+                  placeholder="Price (Lakhs)"
+                  onChange={(e) => handlePastChange(index, e)}
+                />
               </div>
             ))}
 
@@ -117,16 +208,16 @@ export default function PropertyMultiStepForm() {
 const styles = {
   wrapper: {
     minHeight: "100vh",
+    background: "#f1f5f9",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    background: "#f1f5f9",
   },
   card: {
     width: "420px",
     background: "#fff",
     padding: "20px",
-    borderRadius: "12px",
+    borderRadius: "14px",
   },
   box: {
     border: "1px solid #ddd",
